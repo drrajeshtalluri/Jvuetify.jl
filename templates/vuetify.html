@@ -23,7 +23,9 @@ $endif$
   <title>$if(title-prefix)$$title-prefix$ – $endif$$pagetitle$</title>
 
 $for(css)$
-  <link rel="stylesheet" href="$css$" />
+<style>
+$css$
+</style>
 $endfor$
 $if(math)$
   $math$

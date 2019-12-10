@@ -10,7 +10,7 @@ function jhtml(source::String)
     htmlfile = split(basename(source),".")[1] * ".html"
     pdir = dirname(@__FILE__)
     vtemplate = joinpath(pdir, "../templates/vuetify.html")
-    vcss = joinpath(pdir, "../templates/vuetify.css")
+    vcss = read(joinpath(pdir, "../templates/vuetify.css"),String)
     run(`pandoc -f markdown -t html $ofile -o $htmlfile --katex --section-divs --template $vtemplate --toc --css $vcss`)
 end
 
