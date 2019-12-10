@@ -3,6 +3,9 @@ uuid = "7a732ac3-565d-4801-bb34-bba07fdd12c4"
 authors = ["Rajesh Talluri"]
 version = "0.1.0"
 
+[deps]
+Weave = "44d3d7a6-8a23-5bf8-98c5-b353f8df5ec9"
+
 [compat]
 julia = "1"
 
