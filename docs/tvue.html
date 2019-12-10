@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+   <style>html{opacity:0;}</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <link href="    https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons
+" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <meta name="author" content="Rajesh Talluri" />
+  <title>Jvuetify- Reproducible html report</title>
+
+  <link rel="stylesheet" href="C:\Users\raja\.julia\packages\Jvuetify\6pldc\src\../templates/vuetify.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+   var mathElements = document.getElementsByClassName("math");
+   for (var i = 0; i < mathElements.length; i++) {
+    var texText = mathElements[i].firstChild;
+    if (mathElements[i].tagName == "SPAN") {
+     katex.render(texText.data, mathElements[i], {
+      displayMode: mathElements[i].classList.contains('display'),
+      throwOnError: false,
+      fleqn: false
+     });
+  }}});
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" />
+<style>
+pre {
+    border: 1px solid #fff;
+    padding-left: 15px;
+    overflow-x: auto;
+    box-shadow: inset 0 0 4px 0px black;
+}
+.app-table-of-contents {
+  list-style-type: none !important;
+  margin: 0;
+  padding: 32px 0 0;
+  text-align: left;
+  width: 100%;
+}
+li a {
+    border-left: 2px solid transparent;
+    padding-left: 16px;
+    text-decoration: none;
+    transition: color .1s ease-in;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="app">
+ <v-app id="inspire">
+
+     <v-app-bar
+       app
+       clipped-left
+       clipped-right
+      dark
+       color="#5c6d9c">
+     <v-toolbar-title>
+     <span class="title ml-3 mr-5">Jvuetify- Reproducible html report</span>
+     </v-toolbar-title>
+
+     <v-spacer></v-spacer>
+<v-layout column align-end justify-end>
+<span> <v-icon>drafts</v-icon><a class ="author" style ="color:#fff" href="mailto:dr.rajeshtalluri@gmail.com?subject=Regarding Jvuetify- Reproducible html report">Rajesh Talluri</a></span>
+<span>  <v-icon>event_note</v-icon>Dec 10, 2019</span>
+</v-layout>
+
+     </v-app-bar>
+ <v-navigation-drawer
+     v-model="drawer"
+     app
+     clipped
+     color="grey lighten-4"
+   >
+     <v-list
+       class="grey lighten-4"
+     >
+		 <v-subheader>Sections</v-subheader>
+       <div v-for="(item, i) in tocdata">
+         <v-list-item
+           :key="i"
+					 :class = "indlist==i? 'active' : '' "
+           @click = "indlist=i; $vuetify.goTo(item[0].target);"
+         >
+           <v-list-item-action >
+             <v-icon>bookmark</v-icon>
+           </v-list-item-action>
+           <v-list-item-content>
+             <v-list-item-title class="grey--text">
+               {{ item[0].text }}
+             </v-list-item-title>
+           </v-list-item-content>
+         </v-list-item>
+       </div>
+     </v-list>
+   </v-navigation-drawer>
+
+   <v-navigation-drawer
+       app
+       clipped
+       floating
+       right
+			 inset
+     >
+       <v-list
+         dense
+       >
+         <toc-app :toc = "stoc"></toc-app>
+       </v-list>
+     </v-navigation-drawer>
+
+     <v-content>
+     <v-container>
+     <div id ="toc"><ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#html-tables">HTML Tables</a>
+<ul>
+<li><a href="#mtcars-table">Mtcars Table</a></li>
+<li><a href="#iris-table">Iris Table</a></li>
+</ul></li>
+<li><a href="#figures">Figures</a>
+<ul>
+<li><a href="#ggplot2-figures">ggplot2 Figures</a></li>
+<li><a href="#plotlyjs-figures">PlotlyJS Figures</a></li>
+</ul></li>
+</ul></div>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>This a sample document to test Jvuetify.</p>
+<p>This is some markup with some inline equation <span class="math inline">\alpha = \beta+\gamma</span></p>
+<p><span class="math display">\alpha = \beta+\gamma</span></p>
+</section>
+<section id="html-tables" class="level1">
+<h1>HTML Tables</h1>
+<p>HTML tables can be incorporated in markdown documents.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1"></a>using Jvuetify</span>
+<span id="cb1-2"><a href="#cb1-2"></a>using RCall</span>
+<span id="cb1-3"><a href="#cb1-3"></a>df  = rcopy(R<span class="st">&quot;mtcars&quot;</span>)</span>
+<span id="cb1-4"><a href="#cb1-4"></a>println(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">## Mtcars Table&quot;</span>)</span></code></pre></div>
+<section id="mtcars-table" class="level2">
+<h2>Mtcars Table</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1"></a>Jvuetify.htmltable(df,title = <span class="st">&quot;Mtcars Dataset&quot;</span>)|&gt;println</span></code></pre></div>
+<vue-data-table>
+<template slot="title"><span style="color:#4e6b95; font-weight:normal">Mtcars Dataset</span></template>
+<template slot-scope="{search, cfilter}">
+<v-data-table dense
+    :headers=[{"value":"mpg","text":"mpg"},{"value":"cyl","text":"cyl"},{"value":"disp","text":"disp"},{"value":"hp","text":"hp"},{"value":"drat","text":"drat"},{"value":"wt","text":"wt"},{"value":"qsec","text":"qsec"},{"value":"vs","text":"vs"},{"value":"am","text":"am"},{"value":"gear","text":"gear"},{"value":"carb","text":"carb"}]
+    :items=[{"am":1.0,"hp":110.0,"wt":2.62,"carb":4.0,"disp":160.0,"qsec":16.46,"mpg":21.0,"vs":0.0,"cyl":6.0,"gear":4.0,"drat":3.9},{"am":1.0,"hp":110.0,"wt":2.875,"carb":4.0,"disp":160.0,"qsec":17.02,"mpg":21.0,"vs":0.0,"cyl":6.0,"gear":4.0,"drat":3.9},{"am":1.0,"hp":93.0,"wt":2.32,"carb":1.0,"disp":108.0,"qsec":18.61,"mpg":22.8,"vs":1.0,"cyl":4.0,"gear":4.0,"drat":3.85},{"am":0.0,"hp":110.0,"wt":3.215,"carb":1.0,"disp":258.0,"qsec":19.44,"mpg":21.4,"vs":1.0,"cyl":6.0,"gear":3.0,"drat":3.08},{"am":0.0,"hp":175.0,"wt":3.44,"carb":2.0,"disp":360.0,"qsec":17.02,"mpg":18.7,"vs":0.0,"cyl":8.0,"gear":3.0,"drat":3.15},{"am":0.0,"hp":105.0,"wt":3.46,"carb":1.0,"disp":225.0,"qsec":20.22,"mpg":18.1,"vs":1.0,"cyl":6.0,"gear":3.0,"drat":2.76},{"am":0.0,"hp":245.0,"wt":3.57,"carb":4.0,"disp":360.0,"qsec":15.84,"mpg":14.3,"vs":0.0,"cyl":8.0,"gear":3.0,"drat":3.21},{"am":0.0,"hp":62.0,"wt":3.19,"carb":2.0,"disp":146.7,"qsec":20.0,"mpg":24.4,"vs":1.0,"cyl":4.0,"gear":4.0,"drat":3.69},{"am":0.0,"hp":95.0,"wt":3.15,"carb":2.0,"disp":140.8,"qsec":22.9,"mpg":22.8,"vs":1.0,"cyl":4.0,"gear":4.0,"drat":3.92},{"am":0.0,"hp":123.0,"wt":3.44,"carb":4.0,"disp":167.6,"qsec":18.3,"mpg":19.2,"vs":1.0,"cyl":6.0,"gear":4.0,"drat":3.92},{"am":0.0,"hp":123.0,"wt":3.44,"carb":4.0,"disp":167.6,"qsec":18.9,"mpg":17.8,"vs":1.0,"cyl":6.0,"gear":4.0,"drat":3.92},{"am":0.0,"hp":180.0,"wt":4.07,"carb":3.0,"disp":275.8,"qsec":17.4,"mpg":16.4,"vs":0.0,"cyl":8.0,"gear":3.0,"drat":3.07},{"am":0.0,"hp":180.0,"wt":3.73,"carb":3.0,"disp":275.8,"qsec":17.6,"mpg":17.3,"vs":0.0,"cyl":8.0,"gear":3.0,"drat":3.07},{"am":0.0,"hp":180.0,"wt":3.78,"carb":3.0,"disp":275.8,"qsec":18.0,"mpg":15.2,"vs":0.0,"cyl":8.0,"gear":3.0,"drat":3.07},{"am":0.0,"hp":205.0,"wt":5.25,"carb":4.0,"disp":472.0,"qsec":17.98,"mpg":10.4,"vs":0.0,"cyl":8.0,"gear":3.0,"drat":2.93},{"am":0.0,"hp":215.0,"wt":5.424,"carb":4.0,"disp":460.0,"qsec":17.82,"mpg":10.4,"vs":0.0,"cyl":8.0,"gear":3.0,"drat":3.0},{"am":0.0,"hp":230.0,"wt":5.345,"carb":4.0,"disp":440.0,"qsec":17.42,"mpg":14.7,"vs":0.0,"cyl":8.0,"gear":3.0,"drat":3.23},{"am":1.0,"hp":66.0,"wt":2.2,"carb":1.0,"disp":78.7,"qsec":19.47,"mpg":32.4,"vs":1.0,"cyl":4.0,"gear":4.0,"drat":4.08},{"am":1.0,"hp":52.0,"wt":1.615,"carb":2.0,"disp":75.7,"qsec":18.52,"mpg":30.4,"vs":1.0,"cyl":4.0,"gear":4.0,"drat":4.93},{"am":1.0,"hp":65.0,"wt":1.835,"carb":1.0,"disp":71.1,"qsec":19.9,"mpg":33.9,"vs":1.0,"cyl":4.0,"gear":4.0,"drat":4.22},{"am":0.0,"hp":97.0,"wt":2.465,"carb":1.0,"disp":120.1,"qsec":20.01,"mpg":21.5,"vs":1.0,"cyl":4.0,"gear":3.0,"drat":3.7},{"am":0.0,"hp":150.0,"wt":3.52,"carb":2.0,"disp":318.0,"qsec":16.87,"mpg":15.5,"vs":0.0,"cyl":8.0,"gear":3.0,"drat":2.76},{"am":0.0,"hp":150.0,"wt":3.435,"carb":2.0,"disp":304.0,"qsec":17.3,"mpg":15.2,"vs":0.0,"cyl":8.0,"gear":3.0,"drat":3.15},{"am":0.0,"hp":245.0,"wt":3.84,"carb":4.0,"disp":350.0,"qsec":15.41,"mpg":13.3,"vs":0.0,"cyl":8.0,"gear":3.0,"drat":3.73},{"am":0.0,"hp":175.0,"wt":3.845,"carb":2.0,"disp":400.0,"qsec":17.05,"mpg":19.2,"vs":0.0,"cyl":8.0,"gear":3.0,"drat":3.08},{"am":1.0,"hp":66.0,"wt":1.935,"carb":1.0,"disp":79.0,"qsec":18.9,"mpg":27.3,"vs":1.0,"cyl":4.0,"gear":4.0,"drat":4.08},{"am":1.0,"hp":91.0,"wt":2.14,"carb":2.0,"disp":120.3,"qsec":16.7,"mpg":26.0,"vs":0.0,"cyl":4.0,"gear":5.0,"drat":4.43},{"am":1.0,"hp":113.0,"wt":1.513,"carb":2.0,"disp":95.1,"qsec":16.9,"mpg":30.4,"vs":1.0,"cyl":4.0,"gear":5.0,"drat":3.77},{"am":1.0,"hp":264.0,"wt":3.17,"carb":4.0,"disp":351.0,"qsec":14.5,"mpg":15.8,"vs":0.0,"cyl":8.0,"gear":5.0,"drat":4.22},{"am":1.0,"hp":175.0,"wt":2.77,"carb":6.0,"disp":145.0,"qsec":15.5,"mpg":19.7,"vs":0.0,"cyl":6.0,"gear":5.0,"drat":3.62},{"am":1.0,"hp":335.0,"wt":3.57,"carb":8.0,"disp":301.0,"qsec":14.6,"mpg":15.0,"vs":0.0,"cyl":8.0,"gear":5.0,"drat":3.54},{"am":1.0,"hp":109.0,"wt":2.78,"carb":2.0,"disp":121.0,"qsec":18.6,"mpg":21.4,"vs":1.0,"cyl":4.0,"gear":4.0,"drat":4.11}]
+    :search = "search"
+    :custom-filter = "cfilter"
+    multi-sort
+    class="elevation-1"
+  >
+  </v-data-table>
+</template>
+</vue-data-table>
+<div class="sourceCode" id="cb3"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1"></a>df  = rcopy(R<span class="st">&quot;iris&quot;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2"></a>println(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">## Iris Table&quot;</span>)</span></code></pre></div>
+</section>
+<section id="iris-table" class="level2">
+<h2>Iris Table</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1"></a>Jvuetify.htmltable(df)|&gt;println</span></code></pre></div>
+<vue-data-table>
+<template slot="title"><span style="color:#4e6b95; font-weight:normal"></span></template>
+<template slot-scope="{search, cfilter}">
+<v-data-table dense
+    :headers=[{"value":"Sepal_Length","text":"Sepal_Length"},{"value":"Sepal_Width","text":"Sepal_Width"},{"value":"Petal_Length","text":"Petal_Length"},{"value":"Petal_Width","text":"Petal_Width"},{"value":"Species","text":"Species"}]
+    :items=[{"Sepal_Width":3.5,"Species":"setosa","Petal_Length":1.4,"Sepal_Length":5.1,"Petal_Width":0.2},{"Sepal_Width":3.0,"Species":"setosa","Petal_Length":1.4,"Sepal_Length":4.9,"Petal_Width":0.2},{"Sepal_Width":3.2,"Species":"setosa","Petal_Length":1.3,"Sepal_Length":4.7,"Petal_Width":0.2},{"Sepal_Width":3.1,"Species":"setosa","Petal_Length":1.5,"Sepal_Length":4.6,"Petal_Width":0.2},{"Sepal_Width":3.6,"Species":"setosa","Petal_Length":1.4,"Sepal_Length":5.0,"Petal_Width":0.2},{"Sepal_Width":3.9,"Species":"setosa","Petal_Length":1.7,"Sepal_Length":5.4,"Petal_Width":0.4},{"Sepal_Width":3.4,"Species":"setosa","Petal_Length":1.4,"Sepal_Length":4.6,"Petal_Width":0.3},{"Sepal_Width":3.4,"Species":"setosa","Petal_Length":1.5,"Sepal_Length":5.0,"Petal_Width":0.2},{"Sepal_Width":2.9,"Species":"setosa","Petal_Length":1.4,"Sepal_Length":4.4,"Petal_Width":0.2},{"Sepal_Width":3.1,"Species":"setosa","Petal_Length":1.5,"Sepal_Length":4.9,"Petal_Width":0.1},{"Sepal_Width":3.7,"Species":"setosa","Petal_Length":1.5,"Sepal_Length":5.4,"Petal_Width":0.2},{"Sepal_Width":3.4,"Species":"setosa","Petal_Length":1.6,"Sepal_Length":4.8,"Petal_Width":0.2},{"Sepal_Width":3.0,"Species":"setosa","Petal_Length":1.4,"Sepal_Length":4.8,"Petal_Width":0.1},{"Sepal_Width":3.0,"Species":"setosa","Petal_Length":1.1,"Sepal_Length":4.3,"Petal_Width":0.1},{"Sepal_Width":4.0,"Species":"setosa","Petal_Length":1.2,"Sepal_Length":5.8,"Petal_Width":0.2},{"Sepal_Width":4.4,"Species":"setosa","Petal_Length":1.5,"Sepal_Length":5.7,"Petal_Width":0.4},{"Sepal_Width":3.9,"Species":"setosa","Petal_Length":1.3,"Sepal_Length":5.4,"Petal_Width":0.4},{"Sepal_Width":3.5,"Species":"setosa","Petal_Length":1.4,"Sepal_Length":5.1,"Petal_Width":0.3},{"Sepal_Width":3.8,"Species":"setosa","Petal_Length":1.7,"Sepal_Length":5.7,"Petal_Width":0.3},{"Sepal_Width":3.8,"Species":"setosa","Petal_Length":1.5,"Sepal_Length":5.1,"Petal_Width":0.3},{"Sepal_Width":3.4,"Species":"setosa","Petal_Length":1.7,"Sepal_Length":5.4,"Petal_Width":0.2},{"Sepal_Width":3.7,"Species":"setosa","Petal_Length":1.5,"Sepal_Length":5.1,"Petal_Width":0.4},{"Sepal_Width":3.6,"Species":"setosa","Petal_Length":1.0,"Sepal_Length":4.6,"Petal_Width":0.2},{"Sepal_Width":3.3,"Species":"setosa","Petal_Length":1.7,"Sepal_Length":5.1,"Petal_Width":0.5},{"Sepal_Width":3.4,"Species":"setosa","Petal_Length":1.9,"Sepal_Length":4.8,"Petal_Width":0.2},{"Sepal_Width":3.0,"Species":"setosa","Petal_Length":1.6,"Sepal_Length":5.0,"Petal_Width":0.2},{"Sepal_Width":3.4,"Species":"setosa","Petal_Length":1.6,"Sepal_Length":5.0,"Petal_Width":0.4},{"Sepal_Width":3.5,"Species":"setosa","Petal_Length":1.5,"Sepal_Length":5.2,"Petal_Width":0.2},{"Sepal_Width":3.4,"Species":"setosa","Petal_Length":1.4,"Sepal_Length":5.2,"Petal_Width":0.2},{"Sepal_Width":3.2,"Species":"setosa","Petal_Length":1.6,"Sepal_Length":4.7,"Petal_Width":0.2},{"Sepal_Width":3.1,"Species":"setosa","Petal_Length":1.6,"Sepal_Length":4.8,"Petal_Width":0.2},{"Sepal_Width":3.4,"Species":"setosa","Petal_Length":1.5,"Sepal_Length":5.4,"Petal_Width":0.4},{"Sepal_Width":4.1,"Species":"setosa","Petal_Length":1.5,"Sepal_Length":5.2,"Petal_Width":0.1},{"Sepal_Width":4.2,"Species":"setosa","Petal_Length":1.4,"Sepal_Length":5.5,"Petal_Width":0.2},{"Sepal_Width":3.1,"Species":"setosa","Petal_Length":1.5,"Sepal_Length":4.9,"Petal_Width":0.2},{"Sepal_Width":3.2,"Species":"setosa","Petal_Length":1.2,"Sepal_Length":5.0,"Petal_Width":0.2},{"Sepal_Width":3.5,"Species":"setosa","Petal_Length":1.3,"Sepal_Length":5.5,"Petal_Width":0.2},{"Sepal_Width":3.6,"Species":"setosa","Petal_Length":1.4,"Sepal_Length":4.9,"Petal_Width":0.1},{"Sepal_Width":3.0,"Species":"setosa","Petal_Length":1.3,"Sepal_Length":4.4,"Petal_Width":0.2},{"Sepal_Width":3.4,"Species":"setosa","Petal_Length":1.5,"Sepal_Length":5.1,"Petal_Width":0.2},{"Sepal_Width":3.5,"Species":"setosa","Petal_Length":1.3,"Sepal_Length":5.0,"Petal_Width":0.3},{"Sepal_Width":2.3,"Species":"setosa","Petal_Length":1.3,"Sepal_Length":4.5,"Petal_Width":0.3},{"Sepal_Width":3.2,"Species":"setosa","Petal_Length":1.3,"Sepal_Length":4.4,"Petal_Width":0.2},{"Sepal_Width":3.5,"Species":"setosa","Petal_Length":1.6,"Sepal_Length":5.0,"Petal_Width":0.6},{"Sepal_Width":3.8,"Species":"setosa","Petal_Length":1.9,"Sepal_Length":5.1,"Petal_Width":0.4},{"Sepal_Width":3.0,"Species":"setosa","Petal_Length":1.4,"Sepal_Length":4.8,"Petal_Width":0.3},{"Sepal_Width":3.8,"Species":"setosa","Petal_Length":1.6,"Sepal_Length":5.1,"Petal_Width":0.2},{"Sepal_Width":3.2,"Species":"setosa","Petal_Length":1.4,"Sepal_Length":4.6,"Petal_Width":0.2},{"Sepal_Width":3.7,"Species":"setosa","Petal_Length":1.5,"Sepal_Length":5.3,"Petal_Width":0.2},{"Sepal_Width":3.3,"Species":"setosa","Petal_Length":1.4,"Sepal_Length":5.0,"Petal_Width":0.2},{"Sepal_Width":3.2,"Species":"versicolor","Petal_Length":4.7,"Sepal_Length":7.0,"Petal_Width":1.4},{"Sepal_Width":3.2,"Species":"versicolor","Petal_Length":4.5,"Sepal_Length":6.4,"Petal_Width":1.5},{"Sepal_Width":3.1,"Species":"versicolor","Petal_Length":4.9,"Sepal_Length":6.9,"Petal_Width":1.5},{"Sepal_Width":2.3,"Species":"versicolor","Petal_Length":4.0,"Sepal_Length":5.5,"Petal_Width":1.3},{"Sepal_Width":2.8,"Species":"versicolor","Petal_Length":4.6,"Sepal_Length":6.5,"Petal_Width":1.5},{"Sepal_Width":2.8,"Species":"versicolor","Petal_Length":4.5,"Sepal_Length":5.7,"Petal_Width":1.3},{"Sepal_Width":3.3,"Species":"versicolor","Petal_Length":4.7,"Sepal_Length":6.3,"Petal_Width":1.6},{"Sepal_Width":2.4,"Species":"versicolor","Petal_Length":3.3,"Sepal_Length":4.9,"Petal_Width":1.0},{"Sepal_Width":2.9,"Species":"versicolor","Petal_Length":4.6,"Sepal_Length":6.6,"Petal_Width":1.3},{"Sepal_Width":2.7,"Species":"versicolor","Petal_Length":3.9,"Sepal_Length":5.2,"Petal_Width":1.4},{"Sepal_Width":2.0,"Species":"versicolor","Petal_Length":3.5,"Sepal_Length":5.0,"Petal_Width":1.0},{"Sepal_Width":3.0,"Species":"versicolor","Petal_Length":4.2,"Sepal_Length":5.9,"Petal_Width":1.5},{"Sepal_Width":2.2,"Species":"versicolor","Petal_Length":4.0,"Sepal_Length":6.0,"Petal_Width":1.0},{"Sepal_Width":2.9,"Species":"versicolor","Petal_Length":4.7,"Sepal_Length":6.1,"Petal_Width":1.4},{"Sepal_Width":2.9,"Species":"versicolor","Petal_Length":3.6,"Sepal_Length":5.6,"Petal_Width":1.3},{"Sepal_Width":3.1,"Species":"versicolor","Petal_Length":4.4,"Sepal_Length":6.7,"Petal_Width":1.4},{"Sepal_Width":3.0,"Species":"versicolor","Petal_Length":4.5,"Sepal_Length":5.6,"Petal_Width":1.5},{"Sepal_Width":2.7,"Species":"versicolor","Petal_Length":4.1,"Sepal_Length":5.8,"Petal_Width":1.0},{"Sepal_Width":2.2,"Species":"versicolor","Petal_Length":4.5,"Sepal_Length":6.2,"Petal_Width":1.5},{"Sepal_Width":2.5,"Species":"versicolor","Petal_Length":3.9,"Sepal_Length":5.6,"Petal_Width":1.1},{"Sepal_Width":3.2,"Species":"versicolor","Petal_Length":4.8,"Sepal_Length":5.9,"Petal_Width":1.8},{"Sepal_Width":2.8,"Species":"versicolor","Petal_Length":4.0,"Sepal_Length":6.1,"Petal_Width":1.3},{"Sepal_Width":2.5,"Species":"versicolor","Petal_Length":4.9,"Sepal_Length":6.3,"Petal_Width":1.5},{"Sepal_Width":2.8,"Species":"versicolor","Petal_Length":4.7,"Sepal_Length":6.1,"Petal_Width":1.2},{"Sepal_Width":2.9,"Species":"versicolor","Petal_Length":4.3,"Sepal_Length":6.4,"Petal_Width":1.3},{"Sepal_Width":3.0,"Species":"versicolor","Petal_Length":4.4,"Sepal_Length":6.6,"Petal_Width":1.4},{"Sepal_Width":2.8,"Species":"versicolor","Petal_Length":4.8,"Sepal_Length":6.8,"Petal_Width":1.4},{"Sepal_Width":3.0,"Species":"versicolor","Petal_Length":5.0,"Sepal_Length":6.7,"Petal_Width":1.7},{"Sepal_Width":2.9,"Species":"versicolor","Petal_Length":4.5,"Sepal_Length":6.0,"Petal_Width":1.5},{"Sepal_Width":2.6,"Species":"versicolor","Petal_Length":3.5,"Sepal_Length":5.7,"Petal_Width":1.0},{"Sepal_Width":2.4,"Species":"versicolor","Petal_Length":3.8,"Sepal_Length":5.5,"Petal_Width":1.1},{"Sepal_Width":2.4,"Species":"versicolor","Petal_Length":3.7,"Sepal_Length":5.5,"Petal_Width":1.0},{"Sepal_Width":2.7,"Species":"versicolor","Petal_Length":3.9,"Sepal_Length":5.8,"Petal_Width":1.2},{"Sepal_Width":2.7,"Species":"versicolor","Petal_Length":5.1,"Sepal_Length":6.0,"Petal_Width":1.6},{"Sepal_Width":3.0,"Species":"versicolor","Petal_Length":4.5,"Sepal_Length":5.4,"Petal_Width":1.5},{"Sepal_Width":3.4,"Species":"versicolor","Petal_Length":4.5,"Sepal_Length":6.0,"Petal_Width":1.6},{"Sepal_Width":3.1,"Species":"versicolor","Petal_Length":4.7,"Sepal_Length":6.7,"Petal_Width":1.5},{"Sepal_Width":2.3,"Species":"versicolor","Petal_Length":4.4,"Sepal_Length":6.3,"Petal_Width":1.3},{"Sepal_Width":3.0,"Species":"versicolor","Petal_Length":4.1,"Sepal_Length":5.6,"Petal_Width":1.3},{"Sepal_Width":2.5,"Species":"versicolor","Petal_Length":4.0,"Sepal_Length":5.5,"Petal_Width":1.3},{"Sepal_Width":2.6,"Species":"versicolor","Petal_Length":4.4,"Sepal_Length":5.5,"Petal_Width":1.2},{"Sepal_Width":3.0,"Species":"versicolor","Petal_Length":4.6,"Sepal_Length":6.1,"Petal_Width":1.4},{"Sepal_Width":2.6,"Species":"versicolor","Petal_Length":4.0,"Sepal_Length":5.8,"Petal_Width":1.2},{"Sepal_Width":2.3,"Species":"versicolor","Petal_Length":3.3,"Sepal_Length":5.0,"Petal_Width":1.0},{"Sepal_Width":2.7,"Species":"versicolor","Petal_Length":4.2,"Sepal_Length":5.6,"Petal_Width":1.3},{"Sepal_Width":3.0,"Species":"versicolor","Petal_Length":4.2,"Sepal_Length":5.7,"Petal_Width":1.2},{"Sepal_Width":2.9,"Species":"versicolor","Petal_Length":4.2,"Sepal_Length":5.7,"Petal_Width":1.3},{"Sepal_Width":2.9,"Species":"versicolor","Petal_Length":4.3,"Sepal_Length":6.2,"Petal_Width":1.3},{"Sepal_Width":2.5,"Species":"versicolor","Petal_Length":3.0,"Sepal_Length":5.1,"Petal_Width":1.1},{"Sepal_Width":2.8,"Species":"versicolor","Petal_Length":4.1,"Sepal_Length":5.7,"Petal_Width":1.3},{"Sepal_Width":3.3,"Species":"virginica","Petal_Length":6.0,"Sepal_Length":6.3,"Petal_Width":2.5},{"Sepal_Width":2.7,"Species":"virginica","Petal_Length":5.1,"Sepal_Length":5.8,"Petal_Width":1.9},{"Sepal_Width":3.0,"Species":"virginica","Petal_Length":5.9,"Sepal_Length":7.1,"Petal_Width":2.1},{"Sepal_Width":2.9,"Species":"virginica","Petal_Length":5.6,"Sepal_Length":6.3,"Petal_Width":1.8},{"Sepal_Width":3.0,"Species":"virginica","Petal_Length":5.8,"Sepal_Length":6.5,"Petal_Width":2.2},{"Sepal_Width":3.0,"Species":"virginica","Petal_Length":6.6,"Sepal_Length":7.6,"Petal_Width":2.1},{"Sepal_Width":2.5,"Species":"virginica","Petal_Length":4.5,"Sepal_Length":4.9,"Petal_Width":1.7},{"Sepal_Width":2.9,"Species":"virginica","Petal_Length":6.3,"Sepal_Length":7.3,"Petal_Width":1.8},{"Sepal_Width":2.5,"Species":"virginica","Petal_Length":5.8,"Sepal_Length":6.7,"Petal_Width":1.8},{"Sepal_Width":3.6,"Species":"virginica","Petal_Length":6.1,"Sepal_Length":7.2,"Petal_Width":2.5},{"Sepal_Width":3.2,"Species":"virginica","Petal_Length":5.1,"Sepal_Length":6.5,"Petal_Width":2.0},{"Sepal_Width":2.7,"Species":"virginica","Petal_Length":5.3,"Sepal_Length":6.4,"Petal_Width":1.9},{"Sepal_Width":3.0,"Species":"virginica","Petal_Length":5.5,"Sepal_Length":6.8,"Petal_Width":2.1},{"Sepal_Width":2.5,"Species":"virginica","Petal_Length":5.0,"Sepal_Length":5.7,"Petal_Width":2.0},{"Sepal_Width":2.8,"Species":"virginica","Petal_Length":5.1,"Sepal_Length":5.8,"Petal_Width":2.4},{"Sepal_Width":3.2,"Species":"virginica","Petal_Length":5.3,"Sepal_Length":6.4,"Petal_Width":2.3},{"Sepal_Width":3.0,"Species":"virginica","Petal_Length":5.5,"Sepal_Length":6.5,"Petal_Width":1.8},{"Sepal_Width":3.8,"Species":"virginica","Petal_Length":6.7,"Sepal_Length":7.7,"Petal_Width":2.2},{"Sepal_Width":2.6,"Species":"virginica","Petal_Length":6.9,"Sepal_Length":7.7,"Petal_Width":2.3},{"Sepal_Width":2.2,"Species":"virginica","Petal_Length":5.0,"Sepal_Length":6.0,"Petal_Width":1.5},{"Sepal_Width":3.2,"Species":"virginica","Petal_Length":5.7,"Sepal_Length":6.9,"Petal_Width":2.3},{"Sepal_Width":2.8,"Species":"virginica","Petal_Length":4.9,"Sepal_Length":5.6,"Petal_Width":2.0},{"Sepal_Width":2.8,"Species":"virginica","Petal_Length":6.7,"Sepal_Length":7.7,"Petal_Width":2.0},{"Sepal_Width":2.7,"Species":"virginica","Petal_Length":4.9,"Sepal_Length":6.3,"Petal_Width":1.8},{"Sepal_Width":3.3,"Species":"virginica","Petal_Length":5.7,"Sepal_Length":6.7,"Petal_Width":2.1},{"Sepal_Width":3.2,"Species":"virginica","Petal_Length":6.0,"Sepal_Length":7.2,"Petal_Width":1.8},{"Sepal_Width":2.8,"Species":"virginica","Petal_Length":4.8,"Sepal_Length":6.2,"Petal_Width":1.8},{"Sepal_Width":3.0,"Species":"virginica","Petal_Length":4.9,"Sepal_Length":6.1,"Petal_Width":1.8},{"Sepal_Width":2.8,"Species":"virginica","Petal_Length":5.6,"Sepal_Length":6.4,"Petal_Width":2.1},{"Sepal_Width":3.0,"Species":"virginica","Petal_Length":5.8,"Sepal_Length":7.2,"Petal_Width":1.6},{"Sepal_Width":2.8,"Species":"virginica","Petal_Length":6.1,"Sepal_Length":7.4,"Petal_Width":1.9},{"Sepal_Width":3.8,"Species":"virginica","Petal_Length":6.4,"Sepal_Length":7.9,"Petal_Width":2.0},{"Sepal_Width":2.8,"Species":"virginica","Petal_Length":5.6,"Sepal_Length":6.4,"Petal_Width":2.2},{"Sepal_Width":2.8,"Species":"virginica","Petal_Length":5.1,"Sepal_Length":6.3,"Petal_Width":1.5},{"Sepal_Width":2.6,"Species":"virginica","Petal_Length":5.6,"Sepal_Length":6.1,"Petal_Width":1.4},{"Sepal_Width":3.0,"Species":"virginica","Petal_Length":6.1,"Sepal_Length":7.7,"Petal_Width":2.3},{"Sepal_Width":3.4,"Species":"virginica","Petal_Length":5.6,"Sepal_Length":6.3,"Petal_Width":2.4},{"Sepal_Width":3.1,"Species":"virginica","Petal_Length":5.5,"Sepal_Length":6.4,"Petal_Width":1.8},{"Sepal_Width":3.0,"Species":"virginica","Petal_Length":4.8,"Sepal_Length":6.0,"Petal_Width":1.8},{"Sepal_Width":3.1,"Species":"virginica","Petal_Length":5.4,"Sepal_Length":6.9,"Petal_Width":2.1},{"Sepal_Width":3.1,"Species":"virginica","Petal_Length":5.6,"Sepal_Length":6.7,"Petal_Width":2.4},{"Sepal_Width":3.1,"Species":"virginica","Petal_Length":5.1,"Sepal_Length":6.9,"Petal_Width":2.3},{"Sepal_Width":2.7,"Species":"virginica","Petal_Length":5.1,"Sepal_Length":5.8,"Petal_Width":1.9},{"Sepal_Width":3.2,"Species":"virginica","Petal_Length":5.9,"Sepal_Length":6.8,"Petal_Width":2.3},{"Sepal_Width":3.3,"Species":"virginica","Petal_Length":5.7,"Sepal_Length":6.7,"Petal_Width":2.5},{"Sepal_Width":3.0,"Species":"virginica","Petal_Length":5.2,"Sepal_Length":6.7,"Petal_Width":2.3},{"Sepal_Width":2.5,"Species":"virginica","Petal_Length":5.0,"Sepal_Length":6.3,"Petal_Width":1.9},{"Sepal_Width":3.0,"Species":"virginica","Petal_Length":5.2,"Sepal_Length":6.5,"Petal_Width":2.0},{"Sepal_Width":3.4,"Species":"virginica","Petal_Length":5.4,"Sepal_Length":6.2,"Petal_Width":2.3},{"Sepal_Width":3.0,"Species":"virginica","Petal_Length":5.1,"Sepal_Length":5.9,"Petal_Width":1.8}]
+    :search = "search"
+    :custom-filter = "cfilter"
+    multi-sort
+    class="elevation-1"
+  >
+  </v-data-table>
+</template>
+</vue-data-table>
+</section>
+</section>
+<section id="figures" class="level1">
+<h1>Figures</h1>
+<p>We can output a variety of figures</p>
+<section id="ggplot2-figures" class="level2">
+<h2>ggplot2 Figures</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1"></a>Jvuetify.jggplot(<span class="st">&quot;a.png&quot;</span>,<span class="st">&quot;markdown&quot;</span>)</span></code></pre></div>
+<p>“<img src="a.png" />”</p>
+</section>
+<section id="plotlyjs-figures" class="level2">
+<h2>PlotlyJS Figures</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode julia"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">import</span> PlotlyJS</span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">function</span> area1()</span>
+<span id="cb6-3"><a href="#cb6-3"></a>    trace1 = PlotlyJS.scatter(;x=<span class="fl">1</span>:<span class="fl">4</span>, y=[<span class="fl">0</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">5</span>], fill=<span class="st">&quot;tozeroy&quot;</span>)</span>
+<span id="cb6-4"><a href="#cb6-4"></a>    trace2 = PlotlyJS.scatter(;x=<span class="fl">1</span>:<span class="fl">4</span>, y=[<span class="fl">3</span>, <span class="fl">5</span>, <span class="fl">1</span>, <span class="fl">7</span>], fill=<span class="st">&quot;tonexty&quot;</span>)</span>
+<span id="cb6-5"><a href="#cb6-5"></a>    PlotlyJS.plot([trace1, trace2])</span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="kw">end</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a>a = area1()</span>
+<span id="cb6-8"><a href="#cb6-8"></a>Jvuetify.plotlygraph(a,<span class="st">&quot;areagraph&quot;</span>)</span></code></pre></div>
+  <plotly-vue pid=areagraph pdata = '{"layout":{"margin":{"l":50,"b":50,"r":50,"t":60}},"data":[{"y":[0,2,3,5],"type":"scatter","fill":"tozeroy","x":[1,2,3,4]},{"y":[3,5,1,7],"type":"scatter","fill":"tonexty","x":[1,2,3,4]}]}'></plotly-vue>
+</section>
+</section>
+     </v-container>
+		 <!-- <v-footer class="white pa-1 grey--text font-italic caption"
+		 absolute
+		 inset
+		 >
+			 <v-spacer></v-spacer><div>2020- JVuetify pakage</div>
+
+
+		 </v-footer> -->
+   </v-content>
+   <v-btn color="#5265a2" dark small fixed bottom right fab v-on:click="$vuetify.goTo(0)" id="scrollBtn" style="display:none;" v-scroll="scrollfun"><v-icon>keyboard_arrow_up</v-icon></v-btn>
+
+
+   </v-app>
+   </div>
+
+ </body>
+
+
+<script>
+var jlist =[];
+Array.from(document.querySelector('div#toc ul').children).forEach(elem => jlist.push(buildJSON(elem)))
+
+function buildJSON(a) {
+  var subObj = [{ "text": a.querySelector('a').innerText , "target": '#'+a.querySelector('a').href.split('#')[1] }];
+	b = a.querySelector('ul');
+  if (!(b == null)) {
+    Array.from(b.children).forEach(elem => subObj.push(buildJSON(elem)));
+  }
+  return subObj;
+}
+
+toc = document.querySelector('div#toc');
+toc.parentNode.removeChild(toc);
+</script>
+
+
+
+
+<script id = "createsec">
+// Get all elemnts with level 1 headings
+var seccard = document.querySelectorAll("section.level1")
+// Add page class for page styling
+for (var i = 0; i < seccard.length; i++) {
+seccard[i].setAttribute(":style","{'display': (indlist == "+i+"? 'block':'none')}");
+}
+
+// send heading classes to section
+var stabs =  document.querySelectorAll(".tabset")
+for (var i = 0; i < stabs.length; i++) {
+stabs[i].parentNode.classList.add("tabset");
+}
+
+</script>
+
+
+
+
+
+
+
+ <!-- code folding -->
+ <script id = "code-folding">
+ var rcode = document.querySelectorAll('pre.sourceCode.julia');
+ for (var i = 0; i < rcode.length; i++) {
+ var cblock = document.createElement('code-box');
+ //cblock.innerHTML = '<button class="button" slot="trigger">Code</button>';
+ //cblock.innerHTML = '<button class="button is-primary" slot="trigger">Code</button></b-collapse>';
+ rcode[i].parentNode.appendChild(cblock);
+ cblock.appendChild(rcode[i]);
+ }
+
+ var rcode = document.querySelectorAll('pre:not(.sourceCode)');
+ for (var i = 0; i < rcode.length; i++) {
+ var cblock = document.createElement('output-box');
+ //cblock.innerHTML = '<button class="button" slot="trigger">Code</button>';
+ //cblock.innerHTML = '<button class="button is-primary" slot="trigger">Code</button></b-collapse>';
+ rcode[i].parentNode.appendChild(cblock);
+ cblock.appendChild(rcode[i]);
+ }
+
+ var imcode = document.querySelectorAll('img');
+ for (var i = 0; i < imcode.length; i++) {
+ var cblock = document.createElement('image-box');
+ //cblock.innerHTML = '<button class="button" slot="trigger">Code</button>';
+ //cblock.innerHTML = '<button class="button is-primary" slot="trigger">Code</button></b-collapse>';
+ imcode[i].parentNode.appendChild(cblock);
+ cblock.appendChild(imcode[i]);
+ }
+ </script>
+
+
+
+
+
+  <script id = "createsec">
+  // Get all elemnts with level 1 headings
+  var seccard = document.querySelectorAll("section.level1")
+  // Add page class for page styling
+  for (var i = 0; i < seccard.length; i++) {
+  seccard[i].setAttribute(":style","{'display': (indlist == "+i+"? 'block':'none')}");
+  }
+  </script>
+
+
+	<script id = 'tabscript'>
+
+
+	// find all sections with tabset class
+	var tabsec = document.querySelectorAll('section.tabset')
+
+	for (var i = 0; i < tabsec.length; i++) {
+
+	// find heading level of each tabset
+	var tablvl = tabsec[i].getAttribute('class').match(/level(\d)/)[1]
+	// find all sections one level below each tabset
+	var tabsetlvl  = Number(tablvl) + 1;
+	var tabs = tabsec[i].querySelectorAll("section.level" + tabsetlvl);
+	//if (!tabs.length)
+	//  return;
+	// create tablist and tab-content elements
+	var btab = document.createElement('v-tabs');
+	btab.setAttribute("dark", "");
+	// btab.setAttribute("fixed-tabs", "");
+	// btab.setAttribute("background-color", "indigo");
+	for (var j = 0; j < tabs.length; j++) {
+	var bitab =document.createElement('v-tab');
+	bitab.setAttribute("dark", "");
+	bitab.innerText= tabs[j].firstElementChild.innerText;
+	var btabcon =document.createElement('v-tab-item');
+	btabcon.appendChild(tabs[j]);
+	btab.appendChild(bitab);
+	btab.appendChild(btabcon);
+	}
+
+	tabsec[i].appendChild(btab);
+
+	}
+
+	</script>
+
+
+
+
+ <script>
+
+
+
+ Vue.component('plotly-vue',{
+	 props:['pid','pdata'],
+  template:`
+	<div :id = "pid">
+	</div>
+  `,
+  data: function () {
+ 	 return {
+ 	 }
+ },
+  mounted: function(){
+		var plot_json = JSON.parse(this.pdata);
+	  var data = plot_json.data;
+	  var layout = plot_json.layout;
+	  Plotly.newPlot(this.pid, data, layout);
+
+	}
+
+ });
+
+ Vue.component('image-box',{
+ 	template:`
+	<div>
+    <v-dialog
+      v-model="dialog"
+			width = "1200"
+    >
+      <template v-slot:activator="{ on }">
+				<div
+          v-on="on"
+        >
+        <slot></slot>
+        </div>
+      </template>
+      <v-card  height ="800px" class = "imgmodal">
+        <slot></slot>
+      </v-card>
+    </v-dialog>
+  </div>
+ 	`,
+ 	data: function () {
+ 		return {
+			dialog: false,
+ 		}
+ 	}
+ }
+
+ );
+
+
+
+
+
+   Vue.component('code-box',{
+     template:`
+     <div>
+     <v-layout align-end justify-end>
+     <v-btn class="ma-2" x-small  v-on:click="show = !show">
+     <v-icon left color= "orange darken-2" small>{{show ? 'mdi-code-tags' : 'mdi-chevron-double-down'}}</v-icon>
+     <span>Julia Code</span>
+     </v-btn>
+     </v-layout>
+     <div v-show="show">
+     <slot>
+     </slot>
+     </div>
+     </div>
+     `,
+     data: function () {
+       return {
+         show: true
+       }
+     }
+   }
+
+ );
+
+ Vue.component('output-box',{
+   template:`
+   <div>
+   <v-layout align-end justify-end>
+   <v-btn class="ma-2" x-small  v-on:click="show = !show">
+   <v-icon left color= "green darken-2" small>{{show ? 'mdi-code-tags' : 'mdi-chevron-double-down'}}</v-icon>
+   <span>Output</span>
+   </v-btn>
+   </v-layout>
+   <div v-show="show">
+   <slot>
+   </slot>
+   </div>
+   </div>
+   `,
+   data: function () {
+     return {
+       show: true
+     }
+   }
+ }
+
+);
+ Vue.component('toc-app',{
+ props:['toc'],
+ template:`<div>
+ <ul class="app-table-of-contents">
+   <li class="indigo--text text--darken-3 pl-4 mb-2 body-1"> <div @click = "$vuetify.goTo(toc[0].target);" v-text="toc[0].text"/></li>
+   <li
+     v-for="(item, i) in toc.slice(1)"
+     :key="i"
+     class="mb-2"
+   >
+     <a
+       @click = "$vuetify.goTo(item[0].target); activeIndex = i;"
+       :class="{
+         'primary--text': activeIndex === i,
+         'grey--text': activeIndex !== i
+       }"
+       :style="{
+         borderColor: activeIndex === i ? 'inherit' : null
+       }"
+       class="d-block body-2"
+       v-text="item[0].text"
+     />
+   </li>
+ </ul>
+
+ <slot />
+ </div>`,
+ data: function(){
+ return{
+   activeIndex: 0,
+   currentOffset: 0,
+ }
+ },
+ });
+
+
+ Vue.component('vue-data-table',{
+  template:`
+  <v-card class ="data-table">
+      <v-card-title>
+      <slot name = "title"></slot>
+        <v-spacer></v-spacer>
+        <v-text-field
+          v-model="search"
+          append-icon="search"
+          label="Search"
+          hint="Search within each row (e.g. var1,var2)"
+        ></v-text-field>
+      </v-card-title>
+    <slot :search = "search" :cfilter="customFilter"></slot>
+    </v-card>
+  `,
+  data: function () {
+    return {
+      search: '',
+    }
+},
+
+methods: {
+	customFilter(value, search, item) {
+		//this custom filter will do a multi-match separated by a comma.
+		//e.g
+		var msearch = search.toString().toLowerCase().split(",");
+		if(msearch.some(res=>value.toString().indexOf(res))){
+			var values = []
+			for(var k in item){
+				values.push(item[k]);
+			}
+			return msearch.every(b=>values.some(a=>a.toString().indexOf(b)!==-1))
+		}
+		return false
+	}
+}
+});
+
+ var app = new Vue({
+ el: '#app',
+ vuetify: new Vuetify(),
+ data: () => ({
+   drawer: null,
+   indlist : 0,
+   tocdata: jlist,
+ }),
+ computed: {
+   stoc: function(){
+		 return this.tocdata[this.indlist]
+	 }
+ },
+
+ watch: {
+        indlist: function (val) {
+					setTimeout(function(){ window.scrollTo(0,0); }, 0);
+         }
+    },
+
+ methods: {
+          scrollfun() {
+            if (document.documentElement.scrollTop > 600) {
+              document.getElementById("scrollBtn").style.display = "block";
+              // document.querySelector(".v-app-bar").style.display = "none";
+            } else {
+              document.getElementById("scrollBtn").style.display = "none";
+              // document.querySelector(".v-app-bar").style.display = "block";
+            }
+          }
+
+        }
+});
+
+</script>
+
+
+
+<script>
+
+</script>
+
+
+
+
+<style>
+
+html {
+    opacity: 1;
+}
+
+</style>
+
+
+</html>
