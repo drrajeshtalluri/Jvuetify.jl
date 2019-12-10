@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="$lang$" xml:lang="$lang$"$if(dir)$ dir="$dir$"$endif$>
+<head>
+   <style>html{opacity:0;}</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <link href="    https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons
+" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+$for(author-meta)$
+  <meta name="author" content="$author-meta$" />
+$endfor$
+$if(date-meta)$
+  <meta name="dcterms.date" content="$date-meta$" />
+$endif$
+$if(keywords)$
+  <meta name="keywords" content="$for(keywords)$$keywords$$sep$, $endfor$" />
+$endif$
+  <title>$if(title-prefix)$$title-prefix$ – $endif$$pagetitle$</title>
+
+$for(css)$
+  <link rel="stylesheet" href="$css$" />
+$endfor$
+$if(math)$
+  $math$
+$endif$
+<style>
+pre {
+    border: 1px solid #fff;
+    padding-left: 15px;
+    overflow-x: auto;
+    box-shadow: inset 0 0 4px 0px black;
+}
+.app-table-of-contents {
+  list-style-type: none !important;
+  margin: 0;
+  padding: 32px 0 0;
+  text-align: left;
+  width: 100%;
+}
+li a {
+    border-left: 2px solid transparent;
+    padding-left: 16px;
+    text-decoration: none;
+    transition: color .1s ease-in;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="app">
+ <v-app id="inspire">
+
+     <v-app-bar
+       app
+       clipped-left
+       clipped-right
+      dark
+       color="#5c6d9c">
+     <v-toolbar-title>
+     <span class="title ml-3 mr-5">$title$</span>
+     </v-toolbar-title>
+
+     <v-spacer></v-spacer>
+<v-layout column align-end justify-end>
+<span> <v-icon>drafts</v-icon><a class ="author" style ="color:#fff" href="mailto:dr.rajeshtalluri@gmail.com?subject=Regarding $title$">$author$</a></span>
+<span>  <v-icon>event_note</v-icon>$date$</span>
+</v-layout>
+
+     </v-app-bar>
+ <v-navigation-drawer
+     v-model="drawer"
+     app
+     clipped
+     color="grey lighten-4"
+   >
+     <v-list
+       class="grey lighten-4"
+     >
+		 <v-subheader>Sections</v-subheader>
+       <div v-for="(item, i) in tocdata">
+         <v-list-item
+           :key="i"
+					 :class = "indlist==i? 'active' : '' "
+           @click = "indlist=i; $$vuetify.goTo(item[0].target);"
+         >
+           <v-list-item-action >
+             <v-icon>bookmark</v-icon>
+           </v-list-item-action>
+           <v-list-item-content>
+             <v-list-item-title class="grey--text">
+               {{ item[0].text }}
+             </v-list-item-title>
+           </v-list-item-content>
+         </v-list-item>
+       </div>
+     </v-list>
+   </v-navigation-drawer>
+
+   <v-navigation-drawer
+       app
+       clipped
+       floating
+       right
+			 inset
+     >
+       <v-list
+         dense
+       >
+         <toc-app :toc = "stoc"></toc-app>
+       </v-list>
+     </v-navigation-drawer>
+
+     <v-content>
+     <v-container>
+     <div id ="toc">$toc$</div>
+$body$
+     </v-container>
+		 <!-- <v-footer class="white pa-1 grey--text font-italic caption"
+		 absolute
+		 inset
+		 >
+			 <v-spacer></v-spacer><div>2020- JVuetify pakage</div>
+
+
+		 </v-footer> -->
+   </v-content>
+   <v-btn color="#5265a2" dark small fixed bottom right fab v-on:click="$$vuetify.goTo(0)" id="scrollBtn" style="display:none;" v-scroll="scrollfun"><v-icon>keyboard_arrow_up</v-icon></v-btn>
+
+
+   </v-app>
+   </div>
+
+ </body>
+
+
+<script>
+var jlist =[];
+Array.from(document.querySelector('div#toc ul').children).forEach(elem => jlist.push(buildJSON(elem)))
+
+function buildJSON(a) {
+  var subObj = [{ "text": a.querySelector('a').innerText , "target": '#'+a.querySelector('a').href.split('#')[1] }];
+	b = a.querySelector('ul');
+  if (!(b == null)) {
+    Array.from(b.children).forEach(elem => subObj.push(buildJSON(elem)));
+  }
+  return subObj;
+}
+
+toc = document.querySelector('div#toc');
+toc.parentNode.removeChild(toc);
+</script>
+
+
+
+
+<script id = "createsec">
+// Get all elemnts with level 1 headings
+var seccard = document.querySelectorAll("section.level1")
+// Add page class for page styling
+for (var i = 0; i < seccard.length; i++) {
+seccard[i].setAttribute(":style","{'display': (indlist == "+i+"? 'block':'none')}");
+}
+
+// send heading classes to section
+var stabs =  document.querySelectorAll(".tabset")
+for (var i = 0; i < stabs.length; i++) {
+stabs[i].parentNode.classList.add("tabset");
+}
+
+</script>
+
+
+
+
+
+
+
+ <!-- code folding -->
+ <script id = "code-folding">
+ var rcode = document.querySelectorAll('pre.sourceCode.julia');
+ for (var i = 0; i < rcode.length; i++) {
+ var cblock = document.createElement('code-box');
+ //cblock.innerHTML = '<button class="button" slot="trigger">Code</button>';
+ //cblock.innerHTML = '<button class="button is-primary" slot="trigger">Code</button></b-collapse>';
+ rcode[i].parentNode.appendChild(cblock);
+ cblock.appendChild(rcode[i]);
+ }
+
+ var rcode = document.querySelectorAll('pre:not(.sourceCode)');
+ for (var i = 0; i < rcode.length; i++) {
+ var cblock = document.createElement('output-box');
+ //cblock.innerHTML = '<button class="button" slot="trigger">Code</button>';
+ //cblock.innerHTML = '<button class="button is-primary" slot="trigger">Code</button></b-collapse>';
+ rcode[i].parentNode.appendChild(cblock);
+ cblock.appendChild(rcode[i]);
+ }
+
+ var imcode = document.querySelectorAll('img');
+ for (var i = 0; i < imcode.length; i++) {
+ var cblock = document.createElement('image-box');
+ //cblock.innerHTML = '<button class="button" slot="trigger">Code</button>';
+ //cblock.innerHTML = '<button class="button is-primary" slot="trigger">Code</button></b-collapse>';
+ imcode[i].parentNode.appendChild(cblock);
+ cblock.appendChild(imcode[i]);
+ }
+ </script>
+
+
+
+
+
+  <script id = "createsec">
+  // Get all elemnts with level 1 headings
+  var seccard = document.querySelectorAll("section.level1")
+  // Add page class for page styling
+  for (var i = 0; i < seccard.length; i++) {
+  seccard[i].setAttribute(":style","{'display': (indlist == "+i+"? 'block':'none')}");
+  }
+  </script>
+
+
+	<script id = 'tabscript'>
+
+
+	// find all sections with tabset class
+	var tabsec = document.querySelectorAll('section.tabset')
+
+	for (var i = 0; i < tabsec.length; i++) {
+
+	// find heading level of each tabset
+	var tablvl = tabsec[i].getAttribute('class').match(/level(\d)/)[1]
+	// find all sections one level below each tabset
+	var tabsetlvl  = Number(tablvl) + 1;
+	var tabs = tabsec[i].querySelectorAll("section.level" + tabsetlvl);
+	//if (!tabs.length)
+	//  return;
+	// create tablist and tab-content elements
+	var btab = document.createElement('v-tabs');
+	btab.setAttribute("dark", "");
+	// btab.setAttribute("fixed-tabs", "");
+	// btab.setAttribute("background-color", "indigo");
+	for (var j = 0; j < tabs.length; j++) {
+	var bitab =document.createElement('v-tab');
+	bitab.setAttribute("dark", "");
+	bitab.innerText= tabs[j].firstElementChild.innerText;
+	var btabcon =document.createElement('v-tab-item');
+	btabcon.appendChild(tabs[j]);
+	btab.appendChild(bitab);
+	btab.appendChild(btabcon);
+	}
+
+	tabsec[i].appendChild(btab);
+
+	}
+
+	</script>
+
+
+
+
+ <script>
+
+
+
+ Vue.component('plotly-vue',{
+	 props:['pid','pdata'],
+  template:`
+	<div :id = "pid">
+	</div>
+  `,
+  data: function () {
+ 	 return {
+ 	 }
+ },
+  mounted: function(){
+		var plot_json = JSON.parse(this.pdata);
+	  var data = plot_json.data;
+	  var layout = plot_json.layout;
+	  Plotly.newPlot(this.pid, data, layout);
+
+	}
+
+ });
+
+ Vue.component('image-box',{
+ 	template:`
+	<div>
+    <v-dialog
+      v-model="dialog"
+			width = "1200"
+    >
+      <template v-slot:activator="{ on }">
+				<div
+          v-on="on"
+        >
+        <slot></slot>
+        </div>
+      </template>
+      <v-card  height ="800px" class = "imgmodal">
+        <slot></slot>
+      </v-card>
+    </v-dialog>
+  </div>
+ 	`,
+ 	data: function () {
+ 		return {
+			dialog: false,
+ 		}
+ 	}
+ }
+
+ );
+
+
+
+
+
+   Vue.component('code-box',{
+     template:`
+     <div>
+     <v-layout align-end justify-end>
+     <v-btn class="ma-2" x-small  v-on:click="show = !show">
+     <v-icon left color= "orange darken-2" small>{{show ? 'mdi-code-tags' : 'mdi-chevron-double-down'}}</v-icon>
+     <span>Julia Code</span>
+     </v-btn>
+     </v-layout>
+     <div v-show="show">
+     <slot>
+     </slot>
+     </div>
+     </div>
+     `,
+     data: function () {
+       return {
+         show: true
+       }
+     }
+   }
+
+ );
+
+ Vue.component('output-box',{
+   template:`
+   <div>
+   <v-layout align-end justify-end>
+   <v-btn class="ma-2" x-small  v-on:click="show = !show">
+   <v-icon left color= "green darken-2" small>{{show ? 'mdi-code-tags' : 'mdi-chevron-double-down'}}</v-icon>
+   <span>Output</span>
+   </v-btn>
+   </v-layout>
+   <div v-show="show">
+   <slot>
+   </slot>
+   </div>
+   </div>
+   `,
+   data: function () {
+     return {
+       show: true
+     }
+   }
+ }
+
+);
+ Vue.component('toc-app',{
+ props:['toc'],
+ template:`<div>
+ <ul class="app-table-of-contents">
+   <li class="indigo--text text--darken-3 pl-4 mb-2 body-1"> <div @click = "$$vuetify.goTo(toc[0].target);" v-text="toc[0].text"/></li>
+   <li
+     v-for="(item, i) in toc.slice(1)"
+     :key="i"
+     class="mb-2"
+   >
+     <a
+       @click = "$$vuetify.goTo(item[0].target); activeIndex = i;"
+       :class="{
+         'primary--text': activeIndex === i,
+         'grey--text': activeIndex !== i
+       }"
+       :style="{
+         borderColor: activeIndex === i ? 'inherit' : null
+       }"
+       class="d-block body-2"
+       v-text="item[0].text"
+     />
+   </li>
+ </ul>
+
+ <slot />
+ </div>`,
+ data: function(){
+ return{
+   activeIndex: 0,
+   currentOffset: 0,
+ }
+ },
+ });
+
+
+ Vue.component('vue-data-table',{
+  template:`
+  <v-card class ="data-table">
+      <v-card-title>
+      <slot name = "title"></slot>
+        <v-spacer></v-spacer>
+        <v-text-field
+          v-model="search"
+          append-icon="search"
+          label="Search"
+          hint="Search within each row (e.g. var1,var2)"
+        ></v-text-field>
+      </v-card-title>
+    <slot :search = "search" :cfilter="customFilter"></slot>
+    </v-card>
+  `,
+  data: function () {
+    return {
+      search: '',
+    }
+},
+
+methods: {
+	customFilter(value, search, item) {
+		//this custom filter will do a multi-match separated by a comma.
+		//e.g
+		var msearch = search.toString().toLowerCase().split(",");
+		if(msearch.some(res=>value.toString().indexOf(res))){
+			var values = []
+			for(var k in item){
+				values.push(item[k]);
+			}
+			return msearch.every(b=>values.some(a=>a.toString().indexOf(b)!==-1))
+		}
+		return false
+	}
+}
+});
+
+ var app = new Vue({
+ el: '#app',
+ vuetify: new Vuetify(),
+ data: () => ({
+   drawer: null,
+   indlist : 0,
+   tocdata: jlist,
+ }),
+ computed: {
+   stoc: function(){
+		 return this.tocdata[this.indlist]
+	 }
+ },
+
+ watch: {
+        indlist: function (val) {
+					setTimeout(function(){ window.scrollTo(0,0); }, 0);
+         }
+    },
+
+ methods: {
+          scrollfun() {
+            if (document.documentElement.scrollTop > 600) {
+              document.getElementById("scrollBtn").style.display = "block";
+              // document.querySelector(".v-app-bar").style.display = "none";
+            } else {
+              document.getElementById("scrollBtn").style.display = "none";
+              // document.querySelector(".v-app-bar").style.display = "block";
+            }
+          }
+
+        }
+});
+
+</script>
+
+
+
+<script>
+
+</script>
+
+
+
+
+<style>
+
+html {
+    opacity: 1;
+}
+
+</style>
+
+
+</html>
