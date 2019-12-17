@@ -11,19 +11,17 @@ function jhtml(source::String)
     pdir = dirname(@__FILE__)
     vtemplate = joinpath(pdir, "../templates/vuetify.html")
     vcss = read(joinpath(pdir, "../templates/vuetify.css"),String)
-    run(`pandoc -f markdown -t html $ofile -o $htmlfile --katex --section-divs --template $vtemplate --toc --css $vcss`)
+    prismjs = read(joinpath(pdir, "../templates/prism.js"),String)
+    run(`pandoc -f markdown -t html $ofile -o $htmlfile --katex --section-divs --template $vtemplate --toc --css $vcss --no-highlight -V prismjs=$prismjs` )
 end
 
 
-function htmltable(df;title="")
+function htmltable(df;title="",cnames = names(df))
   function df2json(df::DataFrame)
-    len = length(df[:,1])
-    indices = names(df)
-    jsonarray = [Dict([string(index)=> (df[index][i]) for index in indices]) for i in 1:len]
-    return JSON.json(jsonarray)
+    [Dict([string(index) => (df[!, index][i]) for index in names(df)]) for i = 1:nrow(df)] |> JSON.json
   end
   trows = df2json(df)
-  thead = JSON.json([Dict("value"=>i,"text"=>i) for i in names(df)] )
+  thead = JSON.json([Dict("value"=>names(df)[i],"text"=>cnames[i]) for i in 1:length(names(df))] )
   return """
   ```{=html}
   <vue-data-table>
@@ -42,29 +40,24 @@ function htmltable(df;title="")
   </vue-data-table>
   ```"""
 end
-function jggplot(p::String,type::String; width = 8, height =5)
-    jggplot(; width = width, height = height)
+function jggplot(rplot,df,fname::String;type::String = "markdown", width = 8, height =5)
+    jggplot(rplot,df; width = width, height = height)
     R"""
-    ggsave(filename = $p, width = $width, height = $height,type = "cairo", dpi = 300)
+    if (!dir.exists("figures")) {dir.create("figures")}
+    ggsave(filename = paste0("figures/",$fname), width = $width, height = $height,type = "cairo", dpi = 300)
     """
     if type == "markdown"
-      return "![]($p)"
+      return "![](figures/$fname)"
     else
-      return "<img src=$p>"
+      return "<img src=figures/$fname>"
     end
 end
 
-function jggplot(;width = 8, height =5)
+function jggplot(rplot,df;width = 8, height =5)
+  @rput(df)
   R"library(hrbrthemes)"
   R"library(ggplot2)"
-  p = R"""ggplot(mtcars, aes(mpg, wt)) +
-    geom_point(aes(color=factor(carb))) +
-    labs(x="Fuel efficiency (mpg)", y="Weight (tons)",
-         title="Seminal ggplot2 scatterplot example",
-         subtitle="A plot that is only useful for demonstration purposes",
-         caption="Brought to you by the letter 'g'") +
-    scale_color_ipsum() +
-    theme_ipsum_rc()"""
+  p = reval(rplot)
 end
 
 

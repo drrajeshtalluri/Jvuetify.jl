@@ -30,28 +30,6 @@ $endfor$
 $if(math)$
   $math$
 $endif$
-<style>
-pre {
-    border: 1px solid #fff;
-    padding-left: 15px;
-    overflow-x: auto;
-    box-shadow: inset 0 0 4px 0px black;
-}
-.app-table-of-contents {
-  list-style-type: none !important;
-  margin: 0;
-  padding: 32px 0 0;
-  text-align: left;
-  width: 100%;
-}
-li a {
-    border-left: 2px solid transparent;
-    padding-left: 16px;
-    text-decoration: none;
-    transition: color .1s ease-in;
-}
-
-</style>
 </head>
 
 <body>
@@ -64,15 +42,15 @@ li a {
        clipped-left
        clipped-right
       dark
-       color="#5c6d9c">
+       color="#4d6d9a">
      <v-toolbar-title>
      <span class="title ml-3 mr-5">$title$</span>
      </v-toolbar-title>
 
      <v-spacer></v-spacer>
 <v-layout column align-end justify-end>
-<span> <v-icon>drafts</v-icon><a class ="author" style ="color:#fff" href="mailto:dr.rajeshtalluri@gmail.com?subject=Regarding $title$">$author$</a></span>
-<span>  <v-icon>event_note</v-icon>$date$</span>
+<span> <a class ="author" style ="color:#fff" href="mailto:dr.rajeshtalluri@gmail.com?subject=Regarding $title$">$author$</a>&nbsp;<v-icon dense>email</v-icon></span>
+<span>$date$&nbsp;<v-icon dense>today</v-icon></span>
 </v-layout>
 
      </v-app-bar>
@@ -133,16 +111,35 @@ $body$
 
 		 </v-footer> -->
    </v-content>
-   <v-btn color="#5265a2" dark small fixed bottom right fab v-on:click="$$vuetify.goTo(0)" id="scrollBtn" style="display:none;" v-scroll="scrollfun"><v-icon>keyboard_arrow_up</v-icon></v-btn>
+   <v-btn color="#5265a2" dark small fixed bottom right fab v-on:click="$$vuetify.goTo(0)" id="scrollBtn" style="visibility:hidden;" v-scroll="scrollfun"><v-icon>keyboard_arrow_up</v-icon></v-btn>
 
 
    </v-app>
    </div>
-
+	 <script>$prismjs$</script>
  </body>
 
 
 <script>
+
+function changeElementType(element, newtype) {
+    var newelement = document.createElement(newtype);
+
+    // move children
+    while(element.firstChild) newelement.appendChild(element.firstChild);
+
+    // copy attributes
+    for( var i=0, a=element.attributes, l=a.length; i<l; i++) {
+        newelement.attributes[a[i].name] = a[i].value;
+    }
+
+    // event handlers on children will be kept. Unfortunately, there is
+    // no easy way to transfer event handlers on the element itself,
+    // this would require a full management system for events, which is
+    // beyond the scope of this answer. If you figure it out, do it here.
+
+    element.parentNode.replaceChild(newelement, element);
+}
 var jlist =[];
 Array.from(document.querySelector('div#toc ul').children).forEach(elem => jlist.push(buildJSON(elem)))
 
@@ -173,8 +170,15 @@ seccard[i].setAttribute(":style","{'display': (indlist == "+i+"? 'block':'none')
 // send heading classes to section
 var stabs =  document.querySelectorAll(".tabset")
 for (var i = 0; i < stabs.length; i++) {
-stabs[i].parentNode.classList.add("tabset");
+stabs[i].parentNode.classList.add(stabs[i].getAttribute("class"));
 }
+// send heading classes to section
+var stabs =  document.querySelectorAll(".tabset-v")
+for (var i = 0; i < stabs.length; i++) {
+stabs[i].parentNode.classList.add(stabs[i].getAttribute("class"));
+}
+
+
 
 </script>
 
@@ -186,29 +190,20 @@ stabs[i].parentNode.classList.add("tabset");
 
  <!-- code folding -->
  <script id = "code-folding">
- var rcode = document.querySelectorAll('pre.sourceCode.julia');
+ var rcode = document.querySelectorAll('pre.julia');
  for (var i = 0; i < rcode.length; i++) {
- var cblock = document.createElement('code-box');
- //cblock.innerHTML = '<button class="button" slot="trigger">Code</button>';
- //cblock.innerHTML = '<button class="button is-primary" slot="trigger">Code</button></b-collapse>';
- rcode[i].parentNode.appendChild(cblock);
- cblock.appendChild(rcode[i]);
+	 changeElementType(rcode[i], "code-box");
  }
 
- var rcode = document.querySelectorAll('pre:not(.sourceCode)');
+ var rcode = document.querySelectorAll('pre:not(.julia)');
  for (var i = 0; i < rcode.length; i++) {
- var cblock = document.createElement('output-box');
- //cblock.innerHTML = '<button class="button" slot="trigger">Code</button>';
- //cblock.innerHTML = '<button class="button is-primary" slot="trigger">Code</button></b-collapse>';
- rcode[i].parentNode.appendChild(cblock);
- cblock.appendChild(rcode[i]);
+	 changeElementType(rcode[i], "output-box");
+
  }
 
  var imcode = document.querySelectorAll('img');
  for (var i = 0; i < imcode.length; i++) {
  var cblock = document.createElement('image-box');
- //cblock.innerHTML = '<button class="button" slot="trigger">Code</button>';
- //cblock.innerHTML = '<button class="button is-primary" slot="trigger">Code</button></b-collapse>';
  imcode[i].parentNode.appendChild(cblock);
  cblock.appendChild(imcode[i]);
  }
@@ -247,12 +242,15 @@ stabs[i].parentNode.classList.add("tabset");
 	var btab = document.createElement('v-tabs');
 	btab.setAttribute("dark", "");
 	// btab.setAttribute("fixed-tabs", "");
-	// btab.setAttribute("background-color", "indigo");
+	btab.setAttribute("background-color", "#4d6d9a");
 	for (var j = 0; j < tabs.length; j++) {
 	var bitab =document.createElement('v-tab');
 	bitab.setAttribute("dark", "");
 	bitab.innerText= tabs[j].firstElementChild.innerText;
+	tabs[j].firstElementChild.remove();
 	var btabcon =document.createElement('v-tab-item');
+	btabcon.setAttribute(":transition", "false");
+	btabcon.setAttribute(":reverse-transition", "false");
 	btabcon.appendChild(tabs[j]);
 	btab.appendChild(bitab);
 	btab.appendChild(btabcon);
@@ -261,6 +259,42 @@ stabs[i].parentNode.classList.add("tabset");
 	tabsec[i].appendChild(btab);
 
 	}
+
+
+
+		// find all sections with tabset class
+		var tabsec = document.querySelectorAll('section.tabset-v')
+
+		for (var i = 0; i < tabsec.length; i++) {
+
+		// find heading level of each tabset
+		var tablvl = tabsec[i].getAttribute('class').match(/level(\d)/)[1]
+		// find all sections one level below each tabset
+		var tabsetlvl  = Number(tablvl) + 1;
+		var tabs = tabsec[i].querySelectorAll("section.level" + tabsetlvl);
+		//if (!tabs.length)
+		//  return;
+		// create tablist and tab-content elements
+		var btab = document.createElement('v-tabs');
+		btab.setAttribute("dark", "");
+		btab.setAttribute("vertical", "");
+		btab.setAttribute("background-color", "#4d6d9a");
+		for (var j = 0; j < tabs.length; j++) {
+		var bitab =document.createElement('v-tab');
+		bitab.setAttribute("left", "");
+		bitab.innerText= tabs[j].firstElementChild.innerText;
+		tabs[j].firstElementChild.remove();
+		var btabcon =document.createElement('v-tab-item');
+		btabcon.setAttribute(":transition", "false");
+		btabcon.setAttribute(":reverse-transition", "false");
+		btabcon.appendChild(tabs[j]);
+		btab.appendChild(bitab);
+		btab.appendChild(btabcon);
+		}
+
+		tabsec[i].appendChild(btab);
+
+		}
 
 	</script>
 
@@ -285,7 +319,7 @@ stabs[i].parentNode.classList.add("tabset");
 		var plot_json = JSON.parse(this.pdata);
 	  var data = plot_json.data;
 	  var layout = plot_json.layout;
-	  Plotly.newPlot(this.pid, data, layout);
+	  Plotly.newPlot(this.pid, data, layout,{displayModeBar: false});
 
 	}
 
@@ -326,19 +360,21 @@ stabs[i].parentNode.classList.add("tabset");
 
    Vue.component('code-box',{
      template:`
-     <div>
-     <v-layout align-end justify-end>
-     <v-btn class="ma-2" x-small  v-on:click="show = !show">
-     <v-icon left color= "orange darken-2" small>{{show ? 'mdi-code-tags' : 'mdi-chevron-double-down'}}</v-icon>
-     <span>Julia Code</span>
-     </v-btn>
-     </v-layout>
-     <div v-show="show">
-     <slot>
-     </slot>
-     </div>
-     </div>
-     `,
+<div>
+<v-layout align-end justify-end>
+<v-btn class="ma-2" x-small  v-on:click="show = !show">
+<v-icon left color= "orange darken-2" small>{{show ? 'mdi-code-tags' : 'mdi-chevron-double-down'}}</v-icon>
+<span>Julia Code</span>
+</v-btn>
+</v-layout>
+<pre class ="julia" v-show="show">
+<code class ="language-julia" >
+<slot>
+</slot>
+</code>
+</pre>
+</div>
+`,
      data: function () {
        return {
          show: true
@@ -350,19 +386,21 @@ stabs[i].parentNode.classList.add("tabset");
 
  Vue.component('output-box',{
    template:`
-   <div>
-   <v-layout align-end justify-end>
-   <v-btn class="ma-2" x-small  v-on:click="show = !show">
-   <v-icon left color= "green darken-2" small>{{show ? 'mdi-code-tags' : 'mdi-chevron-double-down'}}</v-icon>
-   <span>Output</span>
-   </v-btn>
-   </v-layout>
-   <div v-show="show">
-   <slot>
-   </slot>
-   </div>
-   </div>
-   `,
+<div>
+<v-layout align-end justify-end>
+<v-btn class="ma-2" x-small  v-on:click="show = !show">
+<v-icon left color= "green darken-2" small>{{show ? 'mdi-code-tags' : 'mdi-chevron-double-down'}}</v-icon>
+<span>Output</span>
+</v-btn>
+</v-layout>
+<pre class ="output" v-show="show">
+<code class ="language-julia" >
+<slot>
+</slot>
+</code>
+</pre>
+</div>
+`,
    data: function () {
      return {
        show: true
@@ -469,11 +507,22 @@ methods: {
  methods: {
           scrollfun() {
             if (document.documentElement.scrollTop > 600) {
-              document.getElementById("scrollBtn").style.display = "block";
-              // document.querySelector(".v-app-bar").style.display = "none";
+              document.getElementById("scrollBtn").style.visibility = "visible";
+							// code to hide appbar after scrolling
+							/* document.querySelector(".v-app-bar").style.transform = "translateY(-64px)";
+							mynav = document.querySelectorAll("nav");
+							mynav[0].style.top = "0px";
+							mynav[0].style.maxHeight= "100%";
+							mynav[1].style.top = "0px";
+							mynav[1].style.maxHeight= "100%"; */
             } else {
-              document.getElementById("scrollBtn").style.display = "none";
-              // document.querySelector(".v-app-bar").style.display = "block";
+              document.getElementById("scrollBtn").style.visibility = "hidden";
+							/* document.querySelector(".v-app-bar").style.transform = "translateY(0px)";
+							mynav = document.querySelectorAll("nav");
+							mynav[0].style.top = "64px";
+							mynav[0].style.maxHeight= "calc(100% - 64px);";
+							mynav[1].style.top = "64px";
+							mynav[1].style.maxHeight= "calc(100% - 64px);"; */
             }
           }
 
