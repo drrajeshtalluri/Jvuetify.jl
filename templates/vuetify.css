@@ -19,6 +19,14 @@
   font-weight: normal;
 }
 
+.theme--light.v-data-table thead tr:last-child th {
+	border-bottom: 1px solid rgb(77, 109, 154);
+	border-top: 1px solid rgb(77, 109, 154);
+}
+.theme--light.v-data-table thead tr th {
+    color: rgb(77, 109, 154);
+}
+
 img{
   width:75%;
 }
@@ -73,10 +81,14 @@ https://prismjs.com/download.html#themes=prism&languages=julia */
  */
 
  pre.julia {
-		 margin-bottom: 20px;
-		 border-left: 5px solid #64a7d8;
-		 background-color: white;
-		 box-shadow: inset 0px 0px 5px 1px #979797;
+	 	margin-bottom: 20px;
+    border-left: 5px solid #607D8B;
+    color: #F9F2DE;
+    background-color: #363537;
+    box-shadow: inset 0px 0px 5px 5px #3a3939;
+}
+
+
  }
 
  pre.output {
@@ -87,7 +99,7 @@ https://prismjs.com/download.html#themes=prism&languages=julia */
  .v-application code {
 	 	display:block;
      background-color: unset;
-     color: unset;
+     color: #dcd3b9;
      box-shadow: unset;
 		 font-weight: unset;
 		 padding-left: 20px;
@@ -101,7 +113,7 @@ https://prismjs.com/download.html#themes=prism&languages=julia */
 .token.prolog,
 .token.doctype,
 .token.cdata {
-	color: slategray;
+	color: #95a5a6;
 }
 
 .token.punctuation {
@@ -116,19 +128,21 @@ https://prismjs.com/download.html#themes=prism&languages=julia */
 .token.tag,
 .token.boolean,
 .token.number,
-.token.constant,
-.token.symbol,
+.token.constant
 .token.deleted {
-	color: #905;
+	color: #F7B32B;
 }
 
+.token.symbol{
+	color: #6CD4FF;
+}
 .token.selector,
 .token.attr-name,
 .token.string,
 .token.char,
 .token.builtin,
 .token.inserted {
-	color: #690;
+	color: #9ED99E;
 }
 
 .token.operator,
@@ -136,20 +150,41 @@ https://prismjs.com/download.html#themes=prism&languages=julia */
 .token.url,
 .language-css .token.string,
 .style .token.string {
-	color: #005592;
-	background: hsla(0, 0%, 100%, .5);
+	color: #df6a73;
+}
+
+.token.operator{
+	font-weight: normal;
+}
+
+.token.vtype{
+  font-size: x-small;
+	color: #828282;
 }
 
 .token.atrule,
 .token.attr-value,
-.token.keyword {
-	color: #07a;
-	font-weight: bold;
+.token.keyword,
+.token.macro {
+	color: #FFDE7C;
+}
+.token.control {
+	color: #f39c12;
 }
 
 .token.function,
 .token.class-name {
-	color: #DD4A68;
+	color: #B6DB2F;
+}
+
+.token.vfunction{
+	color: #B6DB2F;
+}
+.token.mfunction{
+	color: #B6DB2F;
+}
+.token.pfunction{
+	color: #B6DB2F;
 }
 
 .token.regex,
